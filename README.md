@@ -25,7 +25,7 @@ eval $(minikube docker-env)
 
 1. Project
    [spring initializr](https://start.spring.io/)
-1. Docker
+2. Docker
    ```Dockerfile
    FROM openjdk:8
    VOLUME /tmp
@@ -41,7 +41,7 @@ eval $(minikube docker-env)
    # only containers in the same host can access.
    docker run --rm curlimages/curl -L -v http://`docker inspect -f "{{ .NetworkSettings.IPAddress }}" boot`:8080
    ```
-1. Kubernetes
+3. Kubernetes
    ```bash
    # push the docker image to registry
    docker push positoy/boot
@@ -139,3 +139,22 @@ eval $(minikube docker-env)
    kubectl expose deployment express --type=NodePort --port=3000
    minikube service express
    ```
+
+# MySQL
+
+```bash
+# mysql-server
+docker run --name mysql -e MYSQL_ROOT_PASSWORD=password -d mysql:5.7
+docker exec -it mysql bash
+mysql -uroot -p
+```
+
+```sql
+-- create 'user' user
+create user 'user' identified by 'password';
+```
+
+```bash
+# mysql-client
+docker run -it --rm --name mysql-client mysql:5.7 mysql -h`docker inspect -f "{{ .NetworkSettings.IPAddress }}" mysql` -uuser -p
+```
