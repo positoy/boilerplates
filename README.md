@@ -159,6 +159,15 @@ create user 'user' identified by 'password';
 docker run -it --rm --name mysql-client mysql:5.7 mysql -h`docker inspect -f "{{ .NetworkSettings.IPAddress }}" mysql` -uuser -p
 ```
 
+# PostgresSQL
+
+1. Docker
+
+```bash
+docker run --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword -d postgres
+docker run -it --rm postgres psql -h `docker inspect -f "{{ .NetworkSettings.IPAddress }}" some-postgres` -U postgres
+```
+
 # Redis
 
 1. Docker
