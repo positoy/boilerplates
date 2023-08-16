@@ -55,3 +55,34 @@ eval $(minikube docker-env)
    # service update if needed
    kubectl rollout restart deployment/boot
    ```
+
+# Next.js
+
+1. Project
+   ```bash
+   npx create-next-app@latest --template typescript next
+   cd next
+   npm run build
+   ```
+2. Docker
+
+   ```Dockerfile
+   FROM node:18.17.1-alpine
+   VOLUME /tmp
+   COPY next /tmp/next
+   WORKDIR /tmp/next
+   ENTRYPOINT ["npm","run","start"]
+   ```
+
+   ```bash
+   docker run --name nextjs -d --rm positoy/nextjs
+   docker push positoy/nextjs
+   ```
+
+3. Kubernetes
+   ```bash
+   docker build -t positoy/nextjs .
+   kubectl create deployment nextjs --image=positoy/nextjs --port=3000
+   kubectl expose deployment nextjs --type=NodePort --port=3000
+   minikube service nextjs
+   ```
