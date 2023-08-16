@@ -158,3 +158,12 @@ create user 'user' identified by 'password';
 # mysql-client
 docker run -it --rm --name mysql-client mysql:5.7 mysql -h`docker inspect -f "{{ .NetworkSettings.IPAddress }}" mysql` -uuser -p
 ```
+
+# Redis
+
+1. Docker
+
+```bash
+docker run --name some-redis -d redis
+docker run -it  --rm redis  redis-cli -h  `docker inspect -f "{{ .NetworkSettings.IPAddress }}" some-redis`
+```
