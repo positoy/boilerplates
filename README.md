@@ -24,8 +24,8 @@ eval $(minikube docker-env)
 ## Spring Boot
 
 1. Project
-   - [spring initializr](https://start.spring.io/)
-2. Docker
+   [spring initializr](https://start.spring.io/)
+1. Docker
    ```Dockerfile
    FROM openjdk:8
    VOLUME /tmp
@@ -41,7 +41,7 @@ eval $(minikube docker-env)
    # only containers in the same host can access.
    docker run --rm curlimages/curl -L -v http://`docker inspect -f "{{ .NetworkSettings.IPAddress }}" boot`:8080
    ```
-3. Kubernetes
+1. Kubernetes
    ```bash
    # push the docker image to registry
    docker push positoy/boot
@@ -61,11 +61,8 @@ eval $(minikube docker-env)
 1. Project
    ```bash
    npx create-next-app@latest --template typescript next
-   cd next
-   npm run build
    ```
 2. Docker
-
    ```Dockerfile
    FROM node:18.17.1-alpine
    VOLUME /tmp
@@ -73,16 +70,72 @@ eval $(minikube docker-env)
    WORKDIR /tmp/next
    ENTRYPOINT ["npm","run","start"]
    ```
+   ```bash
+   cd next
+   npm run build
+   cd ..
+   docker build -t positoy/nextjs .
+   docker run --name nextjs -d --rm positoy/nextjs
+   ```
+3. Kubernetes
+   ```bash
+   docker push positoy/nextjs
+   kubectl create deployment nextjs --image=positoy/nextjs --port=3000
+   kubectl expose deployment nextjs --type=NodePort --port=3000
+   minikube service nextjs
+   ```
+
+# Node.js Express
+
+1. Project
+   ```bash
+   mkdir express
+   cd express
+   npm init -y
+   npm add express typescript @types/express @types/node
+   npx tsc --init
+   ```
+   ```json
+   # tsconfig.js
+   {
+       ...
+       "compilerOptions": {
+           "outDir": "dist"
+       }
+       ...
+   }
+   # package.json
+   {
+       ...
+       "scripts": {
+           "build": "npx tsc",
+           "start": "node dist/server.js"
+       }
+       ...
+   }
+   ```
+2. Docker
+
+   ```Dockerfile
+   FROM node:18.17.1-alpine
+   VOLUME /tmp
+   COPY express /tmp/express
+   WORKDIR /tmp/express
+   ENTRYPOINT ["npm","run","start"]
+   ```
 
    ```bash
-   docker run --name nextjs -d --rm positoy/nextjs
-   docker push positoy/nextjs
+   cd express
+   npm run build
+   cd ..
+   docker build -t positoy/express .
+   docker run --name express -d --rm positoy/express
    ```
 
 3. Kubernetes
    ```bash
-   docker build -t positoy/nextjs .
-   kubectl create deployment nextjs --image=positoy/nextjs --port=3000
-   kubectl expose deployment nextjs --type=NodePort --port=3000
-   minikube service nextjs
+   docker push positoy/exprss
+   kubectl create deployment express --image=positoy/express --port=3000
+   kubectl expose deployment express --type=NodePort --port=3000
+   minikube service express
    ```
